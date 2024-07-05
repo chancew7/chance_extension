@@ -1,0 +1,40 @@
+{
+
+    "manifest_version" : 3,
+    "name" : "Chance_extension",
+    "description" : "Base Level Extension", 
+    "version" : "1.0",
+
+    "icons": {
+        "16": "/pictures/icon.png",
+        "32":"/pictures/icon.png",
+        "48":"/pictures/icon.png",
+        "128":"/pictures/icon.png"
+    },
+
+    "content_scripts" : [
+
+        {
+            "js": ["scripts/content.js"],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ], 
+
+    "background": {
+    "service_worker": "scripts/background.js"
+  }, 
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "pictures/*"
+      ],
+      "matches": ["<all_urls>"]
+  
+    }
+    ]
+
+  
+}
