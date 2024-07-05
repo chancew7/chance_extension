@@ -1,6 +1,14 @@
 
 const IMAGE_PATH = "../pictures/rand_pictures/p";
 const NUM_PICTURES = 5;
+const GEN_ODDS = .15;
+const MIN_SPEED = .6;
+const SPEED_MULTIPLIER = 2;
+const MEAN_PICS_GENERATED = 8;
+const STD_PICS_GENERATED = 3;
+const MEAN_GEN_TIME = 1500000;
+const STD_GEN_TIME = 300000;
+const STD_COLLISION_VELO = .1;
 
 const imagesOnScreen = [];
 const imageUrls = [];
@@ -99,7 +107,8 @@ function placePicture(image){
     let clickTimeout;
 
     img.onmouseover = () =>  {
-
+        removePicture(image);
+        /*
         if (prevClicked){
             removePicture(image);
         }
@@ -109,7 +118,7 @@ function placePicture(image){
             }, 500);
             prevClicked = true;
         }
-        
+        */
 
     }
     img.onclick = () => {
@@ -119,6 +128,8 @@ function placePicture(image){
 
     
     document.body.appendChild(img);
+
+
 }
 
 function removePicture(image){
@@ -164,8 +175,8 @@ function updatePicture(image){
 
 function driftPicture(image){
 
-    image.xVelo = Math.random() * 3 + .6;
-    image.yVelo = Math.random() * 3 + .6;
+    image.xVelo = Math.random() * SPEED_MULTIPLIER + MIN_SPEED;
+    image.yVelo = Math.random() * SPEED_MULTIPLIER + MIN_SPEED;
     updatePicture(image);
 
 }
@@ -181,16 +192,18 @@ function checkCollision(image1, image2){
 }
 
 function handleCollision(image1, image2){
-   // image1.xVelo == (image1.xVelo * -1) + (Math.random() / 2) - (Math.random() / 2);
-    //image1.yVelo == (image1.yVelo * -1) + (Math.random() / 2) - (Math.random() / 2);
-    //image2.xVelo == (image2.xVelo * -1) + (Math.random() / 2) - (Math.random() / 2);
-    //image2.yVelo == (image2.yVelo * -1) + (Math.random() / 2) - (Math.random() / 2);
 
     image1.xVelo *= -1;
-    image2.xVelo *= -1;
-    image1.yVelo *= -1;
-    image2.yVelo *= -1;
+    image1.xVelo += gaussianRandom(0, STD_COLLISION_VELO);
 
+    image2.xVelo *= -1;
+    image2.xVelo += gaussianRandom(0, STD_COLLISION_VELO);
+
+    image1.yVelo *= -1;
+    image1.yVelo += gaussianRandom(0, STD_COLLISION_VELO);
+
+    image2.yVelo *= -1;
+    image2.xyVelo += gaussianRandom(0, STD_COLLISION_VELO);
 
 }
 
@@ -198,7 +211,7 @@ function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function gaussianRandom(mean = 8, stdDev = 3) {
+function gaussianRandom(mean, stdDev) {
     let u1 = Math.random();
     let u2 = Math.random();
 
@@ -208,10 +221,9 @@ function gaussianRandom(mean = 8, stdDev = 3) {
     return randNormal;
 }
 
-
 async function generatePictures(){
 
-    const numPictures = gaussianRandom();
+    const numPictures = gaussianRandom(MEAN_PICS_GENERATED, STD_PICS_GENERATED);
     
     for(let i = 0; i < numPictures; i ++){
 
@@ -221,20 +233,34 @@ async function generatePictures(){
         let randx = Math.random() * (window.innerWidth - imageSize);
         let randy = Math.random() * (window.innerHeight - imageSize);
     
-        const myImg = new ImageObject(imageUrl, randx, randy, 0, 0, imageSize, "id" + i);
-        placePicture(myImg);
-        imagesOnScreen.push(myImg);
-        driftPicture(myImg);
+        if(imagesOnScreen.length < 15){
+            const myImg = new ImageObject(imageUrl, randx, randy, 0, 0, imageSize, "id" + i);
+            placePicture(myImg);
+            imagesOnScreen.push(myImg);
+            driftPicture(myImg);
+        }
+        
     
     }
 
 }
 
-let generate = (Math.random() < .15);
+function scheduleNextGeneration(){
+    let timeToGen = Math.abs(gaussianRandom(MEAN_GEN_TIME, STD_GEN_TIME));
 
-if (generate){
+    setTimeout(() => {
+        generatePictures();
+        scheduleNextGeneration();
+    
+    }, timeToGen);
+}
+
+if (Math.random() < GEN_ODDS){
     generatePictures();
 }
+scheduleNextGeneration();
+
+
 
 
 
