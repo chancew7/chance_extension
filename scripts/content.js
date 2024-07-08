@@ -92,7 +92,16 @@ class ImageObject {
 function placePicture(image){
     
     const img = document.createElement('img');
-    img.src = chrome.runtime.getURL(image.url);
+
+    try{
+        img.src = chrome.runtime.getURL(image.url);
+    }
+    catch(error){
+        return;
+    }
+    
+
+
     img.style.position = 'absolute';
     img.style.top = `${image.yCoord}px`;
     img.style.left = `${image.xCoord}px`;
