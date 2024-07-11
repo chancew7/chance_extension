@@ -6,9 +6,12 @@ const MIN_SPEED = .6;
 const SPEED_MULTIPLIER = 2;
 const MEAN_PICS_GENERATED = 8;
 const STD_PICS_GENERATED = 3;
-const MEAN_GEN_TIME = 1500000;
-const STD_GEN_TIME = 300000;
+const MEAN_GEN_TIME = 8000; //1500000;
+const STD_GEN_TIME = 3000;//300000;
 const STD_COLLISION_VELO = .1;
+const MAX_PICS = 12;
+const MIN_PIC_SIZE = 50;
+const PIC_SIZE_MULTIPLIER = 200;
 
 const imagesOnScreen = [];
 const imageUrls = [];
@@ -97,6 +100,7 @@ function placePicture(image){
         img.src = chrome.runtime.getURL(image.url);
     }
     catch(error){
+        console.error('Error setting image URL: ', error);
         return;
     }
     
@@ -212,7 +216,7 @@ function handleCollision(image1, image2){
     image1.yVelo += gaussianRandom(0, STD_COLLISION_VELO);
 
     image2.yVelo *= -1;
-    image2.xyVelo += gaussianRandom(0, STD_COLLISION_VELO);
+    image2.yVelo += gaussianRandom(0, STD_COLLISION_VELO);
 
 }
 
@@ -238,11 +242,11 @@ async function generatePictures(){
 
         let randomIndex = Math.floor(Math.random() * NUM_PICTURES);
         let imageUrl = IMAGE_PATH + randomIndex + ".png";
-        let imageSize = Math.random() * 200 + 50;
+        let imageSize = Math.random() * PIC_SIZE_MULTIPLIER + MIN_PIC_SIZE;
         let randx = Math.random() * (window.innerWidth - imageSize);
         let randy = Math.random() * (window.innerHeight - imageSize);
     
-        if(imagesOnScreen.length < 15){
+        if(imagesOnScreen.length < MAX_PICS && !document.hidden){
             const myImg = new ImageObject(imageUrl, randx, randy, 0, 0, imageSize, "id" + i);
             placePicture(myImg);
             imagesOnScreen.push(myImg);
@@ -258,7 +262,7 @@ function scheduleNextGeneration(){
     let timeToGen = Math.abs(gaussianRandom(MEAN_GEN_TIME, STD_GEN_TIME));
 
     setTimeout(() => {
-        generatePictures();
+        generatePictures(); 
         scheduleNextGeneration();
     
     }, timeToGen);
