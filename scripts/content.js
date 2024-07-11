@@ -1,16 +1,16 @@
 
 const IMAGE_PATH = "../pictures/rand_pictures/p";
-const NUM_PICTURES = 5;
+const NUM_PICTURES = 35;
 const GEN_ODDS = .15;
 const MIN_SPEED = .6;
-const SPEED_MULTIPLIER = 2;
-const MEAN_PICS_GENERATED = 8;
-const STD_PICS_GENERATED = 3;
-const MEAN_GEN_TIME = 8000; //1500000;
-const STD_GEN_TIME = 3000;//300000;
+const SPEED_MULTIPLIER = 2.3;
+const MEAN_PICS_GENERATED = 6;
+const STD_PICS_GENERATED = 2;
+const MEAN_GEN_TIME = 1500000;
+const STD_GEN_TIME = 300000;
 const STD_COLLISION_VELO = .1;
 const MAX_PICS = 12;
-const MIN_PIC_SIZE = 50;
+const MIN_PIC_SIZE = 100;
 const PIC_SIZE_MULTIPLIER = 200;
 
 const imagesOnScreen = [];
