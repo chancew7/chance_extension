@@ -6,8 +6,8 @@ const MIN_SPEED = .6;
 const SPEED_MULTIPLIER = 2.3;
 const MEAN_PICS_GENERATED = 6;
 const STD_PICS_GENERATED = 2;
-const MEAN_GEN_TIME = 1500000;
-const STD_GEN_TIME = 300000;
+const MEAN_GEN_TIME = 600000;
+const STD_GEN_TIME = 200000;
 const STD_COLLISION_VELO = .1;
 const MAX_PICS = 12;
 const MIN_PIC_SIZE = 100;
@@ -61,6 +61,14 @@ class ImageObject {
 
     set xVelo(newXVelo) {
         this._xVelo = newXVelo;
+        /*
+        if (newXVelo > MAX_SPEED){
+            this._xVelo = MAX_SPEED;
+        }
+        else{
+            this._xVelo = newXVelo;
+        }
+            */
     }
 
     // Getter and Setter for yVelo
@@ -70,6 +78,14 @@ class ImageObject {
 
     set yVelo(newYVelo) {
         this._yVelo = newYVelo;
+        /*
+        if (newYVelo > MAX_SPEED){
+            this._yVelo = MAX_SPEED;
+        }
+        else{
+            this._yVelo = newYVelo;
+        }
+            */
     }
 
     // Getter and Setter for size
@@ -121,6 +137,9 @@ function placePicture(image){
 
     img.onmouseover = () =>  {
         removePicture(image);
+    }
+
+    //img.onmouseover
         /*
         if (prevClicked){
             removePicture(image);
@@ -133,7 +152,7 @@ function placePicture(image){
         }
         */
 
-    }
+    
     img.onclick = () => {
         clearTimeout(clickTimeout);
         driftPicture(image);
@@ -167,6 +186,7 @@ function updatePicture(image){
         img.style.top = `${image.yCoord}px`
 
         if (image.xCoord <= 0 || image.xCoord >= window.innerWidth - image.size){
+            
             image.xVelo *= -1;
         }
         if(image.yCoord <= 0 || image.yCoord >= window.innerHeight - image.size){
@@ -243,8 +263,9 @@ async function generatePictures(){
         let randomIndex = Math.floor(Math.random() * NUM_PICTURES);
         let imageUrl = IMAGE_PATH + randomIndex + ".png";
         let imageSize = Math.random() * PIC_SIZE_MULTIPLIER + MIN_PIC_SIZE;
-        let randx = Math.random() * (window.innerWidth - imageSize);
-        let randy = Math.random() * (window.innerHeight - imageSize);
+
+        let randx = Math.random() * (window.innerWidth - imageSize) + window.scrollX;
+        let randy = Math.random() * (window.innerHeight - imageSize) + scrollY;
     
         if(imagesOnScreen.length < MAX_PICS && !document.hidden){
             const myImg = new ImageObject(imageUrl, randx, randy, 0, 0, imageSize, "id" + i);
